@@ -35,7 +35,7 @@ open-gl-computer-graphics-/
 - `number1.cpp`: keyboard input으로 배경색을 변경하고 타이머 기반 랜덤 색상 전환을 실습합니다.
 - `number2.cpp`: 사분면별 사각형 생성, 선택/크기 조절/색상 변경/초기화 기능을 통합한 확장 실습입니다.
 - `number3.cpp`: 사각형 선택, 이동, 겹침 병합, 우클릭 분할 등 고급 2D 상호작용을 다룹니다.
-- `number4.cpp`: 마우스 클릭 위치에 랜덤 색상/크기의 사각형을 생성하는 기초 상호작용 예제입니다.
+- `number4.cpp`: 마우스 클릭 위치에 사각형 생성 후, 사각형들을 애니메이션으로 움직입니다
 
 ## ⚙️ Environment & Prerequisites
 
