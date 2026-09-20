@@ -26,6 +26,7 @@ open-gl-computer-graphics-/
     ├── number3.cpp
     ├── number4.cpp
     ├── number5.cpp
+    ├── number6.cpp
     ├── console11.vcxproj
     ├── console11.vcxproj.filters
     └── console11.vcxproj.user
@@ -38,6 +39,7 @@ open-gl-computer-graphics-/
 - `number3.cpp`: 사각형 선택, 이동, 겹침 병합, 우클릭 분할 등 고급 2D 상호작용을 다룹니다.
 - `number4.cpp`: 마우스 클릭 위치에 사각형 생성 후, 사각형들을 애니메이션으로 움직입니다
 - `number5.cpp`: 마우스 지우개 사각형 충돌 및 생성/리셋 기능 구현
+- `number6.cpp`: 퍼져나가는 사각형 애니메이션, 시간에 따른 크기 색상 다르게 구현
 
 ## ⚙️ Environment & Prerequisites
 
