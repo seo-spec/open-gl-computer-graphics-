@@ -34,13 +34,15 @@ open-gl-computer-graphics-/
     ├── .gitignore
     ├── opengl2.slnx
     └── opengl2/
-        ├── Shader.h
-        ├── fragment.glsl
-        ├── number7.cpp
-        ├── number8.cpp
-        ├── opengl2.vcxproj
-        ├── opengl2.vcxproj.filters
-        └── vertex.glsl
+        └── opengl2/
+            ├── Shader.h
+            ├── fragment.glsl
+            ├── number7.cpp
+            ├── number8.cpp
+            ├── number9.cpp
+            ├── opengl2.vcxproj
+            ├── opengl2.vcxproj.filters
+            └── vertex.glsl
 ```
 
 ## 🧪 Practice 1
@@ -60,6 +62,7 @@ open-gl-computer-graphics-/
 
 - `number7.cpp`: GLFW/GLEW 초기화, VAO/VBO/EBO 구성, 입력 처리, 도형 렌더링 루프를 담당하며 `InitShader("vertex.glsl", "fragment.glsl")`를 호출해 셰이더 프로그램을 생성/사용합니다.
 - `number8.cpp`: OpenGL + GLFW + GLEW 기반으로 `Shape` 구조체(`x, y, r, g, b, size`) 배열을 관리하며, `InitShader("vertex.glsl", "fragment.glsl")`로 셰이더를 초기화한 뒤 VAO/VBO를 사용해 기준선(GL_LINES)과 삼각형(GL_TRIANGLES)을 렌더링합니다. 마우스 좌클릭으로 사분면별 도형 생성, 우클릭으로 해당 사분면 도형 크기 재설정, `A`/`B` 키로 채움·와이어프레임 모드 전환, `C` 키로 전체 도형 초기화, `Q` 키로 종료 입력을 처리합니다.
+- `number9.cpp`: OpenGL + GLFW + GLEW 환경에서 `Triangle` 구조체(`x, y, size, r, g, b, vx, vy`) 벡터를 관리하며, 좌클릭으로 랜덤 크기/색상/속도의 삼각형을 생성하고 VAO/VBO를 통해 동적으로 렌더링합니다. `C` 키로 전체 삭제, `Q` 키로 종료를 처리하며, `1`~`4` 키로 이동 모드를 전환해 (1) X/Y 경계 반사 이동, (2) X축 왕복 + 경계 충돌 시 Y 단계 이동, (3) 속도 재설정 후 X/Y 동시 반사 이동, (4) 극좌표 기반 회전·반지름 팽창/수축 이동을 적용합니다.
 - `Shader.h`: 외부 GLSL 파일을 읽어 Vertex Shader와 Fragment Shader를 생성·컴파일하고, 이를 하나의 Shader Program으로 링크하여 사용할 수 있도록 하는 재사용 가능한 OpenGL Shader 초기화 헤더입니다.
 - `vertex.glsl`: 정점 위치(`layout(location = 0)`)와 색상(`layout(location = 1)`)을 입력받아 `gl_Position`과 색상 출력 변수(`out_Color`)를 설정합니다.
 - `fragment.glsl`: Vertex Shader에서 전달된 `out_Color`를 받아 최종 픽셀 색상(`Frag_Color`)으로 출력합니다.
