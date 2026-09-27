@@ -140,7 +140,10 @@
     </Manifest>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="number7.cpp" />
+    <ClCompile Include="number7.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="number8.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="fragment.glsl" />
