@@ -13,6 +13,8 @@ struct Triangle {
     float size;
     float r, g, b;
     float vx, vy;
+    float Orivx, Orivy;
+    vector<float>path;
 };
 
 vector<Triangle> triangles;
@@ -66,8 +68,8 @@ void DrawScene();
 float lastTime = 0;// delta 시간 구하기 위해서
 
 int main() {
-    width = 1280;
-    height = 900;
+    width = 1200;
+    height =1200;
 
     if (!glfwInit()) return -1;
 
@@ -118,18 +120,22 @@ int main() {
         else if (moveMode == 2) {
             for (int k = triangles.size() - 1;k >= 0;k--) {
                 triangles[k].x += triangles[k].vx * deltaTime;
-                
-                if (triangles[k].x + triangles[k].size >= 1.0f || triangles[k].x - triangles[k].size <= -1.0f) {
-                    triangles[k].vx = -triangles[k].vx;
 
-                    
-                    if (triangles[k].x + triangles[k].size >= 1.0f) triangles[k].x = 1.0f - triangles[k].size;
-                    if (triangles[k].x - triangles[k].size <= -1.0f) triangles[k].x = -1.0f + triangles[k].size;
+                float stepY = (triangles[k].vy >= 0) ? 0.05f : -0.05f;
 
-                    float stepY = (triangles[k].vy >= 0) ? 0.05f : -0.05f;
-                    triangles[k].y += stepY;
+                if (triangles[k].x + 3 * triangles[k].size >= 1.0f) {
+                    triangles[k].x = 1.0f - 3 * triangles[k].size; 
+                    triangles[k].vx = -triangles[k].vx;            
+                    triangles[k].y += stepY;                       
                 }
-                if (triangles[k].y + 3 * triangles[k].size >= 1.0f) {
+                
+                else if (triangles[k].x - 3 * triangles[k].size <= -1.0f) {
+                    triangles[k].x = -1.0f + 3 * triangles[k].size; 
+                    triangles[k].vx = -triangles[k].vx;             
+                    triangles[k].y += stepY;                       
+                }
+
+                if (triangles[k].y + triangles[k].size >= 1.0f) {
                     triangles[k].vy = -abs(triangles[k].vy); // 무조건 아래(-)로
                 }
                 else if (triangles[k].y - triangles[k].size <= -1.0f) {
@@ -147,8 +153,8 @@ int main() {
                     triangles[k].y = 1.0f - 3 * triangles[k].size;
                     triangles[k].vy = -abs(triangles[k].vy);       
                 }
-                else if (triangles[k].y - triangles[k].size <= -1.0f) {
-                    triangles[k].y = -1.0f + triangles[k].size;   
+                else if (triangles[k].y - 3*triangles[k].size <= -1.0f) {
+                    triangles[k].y = -1.0f + 3*triangles[k].size;   
                     triangles[k].vy = abs(triangles[k].vy);       
                 }
 
@@ -157,37 +163,50 @@ int main() {
                     triangles[k].x = 1.0f - triangles[k].size;     
                     triangles[k].vx = -abs(triangles[k].vx);      
                 }
-                else if (triangles[k].x - triangles[k].size <= -1.0f) {
-                    triangles[k].x = -1.0f + triangles[k].size;    
+                else if (triangles[k].x - 3*triangles[k].size <= -1.0f) {
+                    triangles[k].x = -1.0f + 3*triangles[k].size;    
                     triangles[k].vx = abs(triangles[k].vx);        
                 }
             }
         }
         else if (moveMode == 4) {
+            static int framecount = 0;
+            framecount++;
             for (int k = triangles.size() - 1; k >= 0; k--) {
+                
                 float x = triangles[k].x;
                 float y = triangles[k].y;
 
-                // 1. 현재 (x, y) 좌표에서 반지름 R과 각도 theta 구하기
+                // 현재 (x, y) 좌표에서 반지름 R과 각도 theta 구하기
                 float R = sqrt(x * x + y * y);
                 float theta = atan2(y, x);
 
-                // 2. 각도(회전) 및 반지름(수축/팽창) 업데이트
-                theta += 2.0f * deltaTime;         // 회전 속도
+                
+                
+                theta +=4.0f* deltaTime;         // 회전 속도
+
                 R += triangles[k].vy * deltaTime;  // vy를 반지름 변화율로 활용
 
-                // 3. 화면 외곽(0.8f)에 도달하면 수축(-vy), 중심근처(0.1f)에 닿으면 팽창(+vy)
-                if (R >= 0.8f || x + triangles[k].size >= 1.0f || x - triangles[k].size <= -1.0f ||
-                    y + 3 * triangles[k].size >= 1.0f || y - triangles[k].size <= -1.0f) {
-                    triangles[k].vy = -abs(triangles[k].vy); // 안쪽으로 수축 스위치
+                
+                if (R >= 0.3f) {
+                    R = 0.3f;
+                    triangles[k].vy = -abs(triangles[k].vy); 
                 }
-                else if (R <= 0.1f) {
-                    triangles[k].vy = abs(triangles[k].vy);  // 바깥으로 팽창 스위치
+                else if (R <= 0.0f) {
+                    R = 0.0f;
+                    triangles[k].vy = abs(triangles[k].vy); 
                 }
 
-                // 4. 변환된 극좌표를 다시 직교좌표 (x, y) 위치로 대입
+                // 변환된 극좌표를 다시 직교좌표 (x, y) 위치로 대입
+                
                 triangles[k].x = R * cos(theta);
                 triangles[k].y = R * sin(theta);
+                cout << "theta: " << theta << " R: " << "x: " << triangles[k].x << "y: " << triangles[k].y << endl;
+                
+                    triangles[k].path.push_back(triangles[k].x);
+                    triangles[k].path.push_back(triangles[k].y);
+                    triangles[k].path.push_back(0.0f);
+                
             }
         }
         InputProcess();
@@ -224,10 +243,16 @@ void InputProcess() {
                 newTri.b = ColorDist(gen);
                 float vx = SpeedDist(gen);
                 float vy = SpeedDist(gen);
+                newTri.Orivx = vx;
+                newTri.Orivy = vy;
                 if (abs(vx) < 0.1f)vx = (vx < 0) ? -0.15f:0.15f;
                 if (abs(vy) < 0.1f)vy = (vy < 0) ? -0.15f : 0.15f;
                 newTri.vx = vx;
-                newTri.vy = vy;
+                if (moveMode == 4) {
+                    newTri.vy = 0.02f;
+                } else {
+                    newTri.vy = vy;
+                }
                 triangles.push_back(newTri);
             }
         }
@@ -238,7 +263,11 @@ void InputProcess() {
     }
     if (glfwGetKey(window, GLFW_KEY_C) == GLFW_PRESS) {
         if (!isCpressed) {
+            for (auto& tri : triangles) {
+                tri.path.clear();
+            }
             triangles.clear();
+        
         }
         isCpressed = true;
     }
@@ -249,6 +278,10 @@ void InputProcess() {
         if (!isOnepressed) {
             moveMode = 1;
             cout << "mode 변경 완료 1번" << endl;
+            for (auto& tri : triangles) {
+                tri.vx = (tri.vx >= 0) ? abs(tri.Orivx) : -abs(tri.Orivx);
+                tri.vy = (tri.vy >= 0) ? abs(tri.Orivy) : -abs(tri.Orivy);
+            }
         }
         isOnepressed = true;
     }
@@ -259,6 +292,10 @@ void InputProcess() {
         if (!isTwopressed) {
             moveMode = 2;
             cout << "mode 변경 완료 2번" << endl;
+            for (auto& tri : triangles) {
+                tri.vx = (tri.vx >= 0) ? abs(tri.Orivx) : -abs(tri.Orivx);
+                tri.vy = (tri.vy >= 0) ? abs(tri.Orivy) : -abs(tri.Orivy);
+            }
         }
         isTwopressed = true;
     }
@@ -283,28 +320,57 @@ void InputProcess() {
         if (!isFourpressed) {
             moveMode = 4;
             for (auto& tri : triangles) {
-                tri.vy = 0.1f; // 반지름 팽창 속도 기본값 세팅
+                tri.vy = 0.02f; // 반지름 팽창 속도 기본값 세팅
             }
             cout << "mode 변경 완료 4번" << endl;
         }
         isFourpressed = true;
     }
     else {
+       
         isFourpressed = false;
     }
 }
 
 void DrawTri(float x, float y, float size, float r, float g, float b, float vx, float vy) {
+    float posData[9];
 
-    float posData[]{
-       x - size,y - size,0.0f,
-       x + size,y - size,0.0f,
-       x,y + 3 * size,0.0f
-    };
+    
+    if (moveMode == 2) {
+        if (vx > 0) {
+            posData[0] = x - size;        posData[1] = y + size; posData[2] = 0.0f;
+            posData[3] = x - size;        posData[4] = y - size; posData[5] = 0.0f;
+            posData[6] = x + 3 * size;    posData[7] = y;        posData[8] = 0.0f;
+        }
+        else {
+            posData[0] = x + size;        posData[1] = y - size; posData[2] = 0.0f;
+            posData[3] = x + size;        posData[4] = y + size; posData[5] = 0.0f;
+            posData[6] = x - 3 * size;    posData[7] = y;        posData[8] = 0.0f;
+        }
+    }
+    
+    else if (moveMode == 3) {
+        if (vy > 0) { 
+            posData[0] = x - size;        posData[1] = y - size; posData[2] = 0.0f;
+            posData[3] = x + size;        posData[4] = y - size; posData[5] = 0.0f;
+            posData[6] = x;               posData[7] = y + 3 * size; posData[8] = 0.0f;
+        }
+        else {
+            posData[0] = x - size;        posData[1] = y + size; posData[2] = 0.0f;
+            posData[3] = x + size;        posData[4] = y + size; posData[5] = 0.0f;
+            posData[6] = x;               posData[7] = y - 3 * size; posData[8] = 0.0f;
+        }
+    }
+    else {
+        posData[0] = x - size;            posData[1] = y - size; posData[2] = 0.0f;
+        posData[3] = x + size;            posData[4] = y - size; posData[5] = 0.0f;
+        posData[6] = x;                   posData[7] = y + 3 * size; posData[8] = 0.0f;
+    }
+
     float ColorData[]{
-        r,g,b,
-        r,g,b,
-        r,g,b
+        r, g, b,
+        r, g, b,
+        r, g, b
     };
 
     glBindBuffer(GL_ARRAY_BUFFER, vbo[0]);
@@ -325,7 +391,30 @@ void DrawScene() {
     glUseProgram(shaderProgramID);
     glBindVertexArray(vao);
 
+
     for (int k = triangles.size() - 1;k >= 0;k--) {
+        if (moveMode == 4 && triangles[k].path.size() >= 6) {
+            int vertexCount = triangles[k].path.size() / 3;
+
+            // 1. 위치 VBO(vbo[0])에 누적된 path 좌표 배열 전송
+            glBindBuffer(GL_ARRAY_BUFFER, vbo[0]);
+            glBufferData(GL_ARRAY_BUFFER, triangles[k].path.size() * sizeof(float), triangles[k].path.data(), GL_DYNAMIC_DRAW);
+
+            // 2. 색상 VBO(vbo[1])에 해당 삼각형의 색상을 정점 개수만큼 채워서 전송
+            std::vector<float> lineColors;
+            lineColors.reserve(triangles[k].path.size());
+            for (int i = 0; i < vertexCount; i++) {
+                lineColors.push_back(triangles[k].r);
+                lineColors.push_back(triangles[k].g);
+                lineColors.push_back(triangles[k].b);
+            }
+            glBindBuffer(GL_ARRAY_BUFFER, vbo[1]);
+            glBufferData(GL_ARRAY_BUFFER, lineColors.size() * sizeof(float), lineColors.data(), GL_DYNAMIC_DRAW);
+
+            // 3. 선 두께 설정 및 GL_LINE_STRIP으로 궤적 연결하기
+            glPointSize(5.0f);
+            glDrawArrays(GL_POINTS, 0, vertexCount);
+        }
         DrawTri(triangles[k].x, triangles[k].y, triangles[k].size,
             triangles[k].r, triangles[k].g, triangles[k].b, triangles[k].vx, triangles[k].vy);
     }
