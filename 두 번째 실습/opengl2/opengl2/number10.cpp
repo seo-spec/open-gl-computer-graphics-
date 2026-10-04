@@ -8,6 +8,13 @@
 
 using namespace std;
 
+bool isLeftPressed = false;
+bool isRpressed = false;
+
+int selectIndex = -1;
+float prevX = 0.0f;
+float prevY = 0.0f;
+
 enum Shapetype {
     Square = 0,
     Eql_Tri,
@@ -18,10 +25,10 @@ struct Piece {
     float x, y;// 그려져야될 위치
     float size;
     float r, g, b;
-    bool isDragging = false;
-    bool isFixed = false;
+    bool isDragging;
+    bool isFixed;
     Shapetype type;
-    int dir = 0; // 도형의 방향/회전 (0, 1, 2, 3)
+    int dir;
 };
 
 struct Slot {
@@ -71,15 +78,32 @@ void InitGame() {
 
     // 2. 모양판 2: 바람개비/나비 모양 정삼각형 4개 (우측 중앙)
     // 중심: (0.50, 0.25), 각 방향(0: 아래쪽 향함, 1: 위쪽 향함, 2: 왼쪽 향함, 3: 오른쪽 향함)
-    plates.slots.push_back({ 0.50f, 0.35f, 0.07f, false, -1, Eql_Tri, 0 }); // 위쪽 슬롯 (꼭짓점 아래로)
-    plates.slots.push_back({ 0.50f, 0.15f, 0.07f, false, -1, Eql_Tri, 1 }); // 아래쪽 슬롯 (꼭짓점 위로)
-    plates.slots.push_back({ 0.40f, 0.25f, 0.07f, false, -1, Eql_Tri, 2 }); // 왼쪽 슬롯 (꼭짓점 오른쪽으로)
-    plates.slots.push_back({ 0.60f, 0.25f, 0.07f, false, -1, Eql_Tri, 3 }); // 오른쪽 슬롯 (꼭짓점 왼쪽으로)
+    plates.slots.push_back({ 0.50f, 0.35f, 0.08f, false, -1, Eql_Tri, 0 }); // 위쪽 슬롯 (꼭짓점 아래로)
+    plates.slots.push_back({ 0.50f, 0.15f, 0.08f, false, -1, Eql_Tri, 1 }); // 아래쪽 슬롯 (꼭짓점 위로)
+    plates.slots.push_back({ 0.40f, 0.25f, 0.08f, false, -1, Eql_Tri, 2 }); // 왼쪽 슬롯 (꼭짓점 오른쪽으로)
+    plates.slots.push_back({ 0.60f, 0.25f, 0.08f, false, -1, Eql_Tri, 3 }); // 오른쪽 슬롯 (꼭짓점 왼쪽으로)
 
     // 3. 모양판 3: 직각삼각형 2개로 만든 세로 직사각형 (우측 하단)
     // 중심: (0.50, -0.30), sizeX = 0.10f, sizeY = 0.20f
     plates.slots.push_back({ 0.50f, -0.30f, 0.10f, false, -1, Right_Tri, 0 }); // 대각선 상단/좌측 삼각
     plates.slots.push_back({ 0.50f, -0.30f, 0.10f, false, -1, Right_Tri, 1 }); // 대각선 하단/우측 삼각
+
+    //4. 모양판 4
+    plates.slots.push_back({ 0.80f, 0.57f, 0.08f, false, -1, Square,  0 }); // 몸통 사각형 (Y: 0.50f ~ 0.64f)
+    plates.slots.push_back({ 0.80f, 0.73f, 0.08f, false, -1, Eql_Tri, 1 }); // 지붕 정삼각형 (Y: 0.64f ~ 0.78f)
+    plates.slots.push_back({ 0.80f, 0.41f, 0.08f, false, -1, Eql_Tri, 0 }); // 위쪽 슬롯 (꼭짓점 아래로)\
+
+    //5. 모양판 
+    // 상단 정삼각형 (지붕, Y: 0.03f ~ 0.17f)
+    plates.slots.push_back({ 0.80f,  0.10f, 0.07f, false, -1, Eql_Tri, 1 });
+
+    // 중단 사각형 (몸통, Y: -0.11f ~ 0.03f)
+    plates.slots.push_back({ 0.80f, -0.04f, 0.07f, false, -1, Square,  0 });
+
+    // 하단 직각삼각형 2개 (받침대, Y: -0.25f)
+    // 직각삼각형 2개가 합쳐져 세로 높이 0.28f(Y: -0.39f ~ -0.11f)의 받침대가 됨
+    plates.slots.push_back({ 0.80f, -0.25f, 0.07f, false, -1, Right_Tri, 0 });
+    plates.slots.push_back({ 0.80f, -0.25f, 0.07f, false, -1, Right_Tri, 1 });
 
     for (size_t i = 0; i < plates.slots.size();i++) {
         Piece piece;
@@ -176,6 +200,92 @@ void InputProcess() {
     //[Q] 키 종료
     if (glfwGetKey(window, GLFW_KEY_Q) == GLFW_PRESS) {
         glfwSetWindowShouldClose(window, true);
+    }
+    if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS) {
+        double xpos, ypos;
+        glfwGetCursorPos(window, &xpos, &ypos);
+        float mx = (xpos / width) * 2.0f - 1.0f;
+        float my = 1.0f - (ypos / height) * 2.0f;
+       
+        if (!isLeftPressed) {
+            for (int k = pieces.size() - 1;k >= 0;k--) {
+                if (pieces[k].isFixed)continue;
+                float s = pieces[k].size;
+                float px = pieces[k].x;
+                float py = pieces[k].y;
+                
+                float halfW = s;
+                float halfH = s;
+
+                if (pieces[k].type == Right_Tri) {
+                    halfH = s * 2.0f;
+                }
+
+                
+                if (mx >= px - halfW && mx <= px + halfW &&
+                    my >= py - halfH && my <= py + halfH)
+                {
+                    pieces[k].isDragging = true;
+                    selectIndex = k;
+                    break; // 맨 위 1개만 잡고 루프 탈출
+                }
+            }
+
+            prevX = mx;
+            prevY = my;
+            isLeftPressed = true;
+        }
+        else {
+            float deltaX = mx - prevX;
+            float deltaY = my - prevY;
+
+            if (selectIndex != -1) {
+                pieces[selectIndex].x += deltaX;
+                pieces[selectIndex].y += deltaY;
+            }
+
+            prevX = mx;
+            prevY = my;
+        }
+    }
+    else if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_RELEASE && isLeftPressed) {
+        if (selectIndex != -1) {
+            for (int i = 0; i < plates.slots.size();i++) {
+                auto& slots = plates.slots[i];
+                bool isSameSize = (abs(pieces[selectIndex].size - slots.size) < 0.001f);
+
+                if (!slots.isfilled && pieces[selectIndex].type == slots.requiredType
+                    && pieces[selectIndex].dir == slots.dir&&isSameSize) {
+
+                    float dx = pieces[selectIndex].x - slots.x;
+                    float dy = pieces[selectIndex].y - slots.y;
+
+                    float dist = dx * dx + dy * dy;
+                    if (dist < 0.0064f) {
+                        pieces[selectIndex].x = slots.x;
+                        pieces[selectIndex].y = slots.y;
+                        pieces[selectIndex].isFixed = true;
+                        slots.isfilled = true;
+
+                        break;
+                    }
+                    
+                }
+            }
+            pieces[selectIndex].isDragging = false;
+            selectIndex = -1;
+        }
+        
+        isLeftPressed = false;
+    }
+    if (glfwGetKey(window, GLFW_KEY_R) == GLFW_PRESS) {
+        if (!isRpressed) {
+            InitGame();
+            isRpressed = true;
+        }
+    }
+    else {
+        isRpressed = false;
     }
 }
 
