@@ -42,6 +42,7 @@ open-gl-computer-graphics-/
             ├── number9.cpp
             ├── number10.cpp
             ├── number11.cpp
+            ├── number12.cpp
             ├── opengl2.vcxproj
             ├── opengl2.vcxproj.filters
             └── vertex.glsl
@@ -67,6 +68,7 @@ open-gl-computer-graphics-/
 - `number9.cpp`: OpenGL + GLFW + GLEW 환경에서 `Triangle` 구조체(`x, y, size, r, g, b, vx, vy`) 벡터를 관리하며, 좌클릭으로 랜덤 크기/색상/속도의 삼각형을 생성하고 VAO/VBO를 통해 동적으로 렌더링합니다. `C` 키로 전체 삭제, `Q` 키로 종료를 처리하며, `1`~`4` 키로 이동 모드를 전환해 (1) X/Y 경계 반사 이동, (2) X축 왕복 + 경계 충돌 시 Y 단계 이동, (3) 속도 재설정 후 X/Y 동시 반사 이동, (4) 극좌표 기반 회전·반지름 팽창/수축 이동을 적용합니다.
 - `number10.cpp`: OpenGL + GLFW + GLEW 환경에서 퍼즐 조각(`Piece`)과 정답 슬롯(`Slot`) 목록을 구성해 드래그 앤 드롭 맞추기 게임을 구현합니다. 좌측에 랜덤 위치/색상으로 생성된 사각형·정삼각형·직각삼각형 조각을 마우스 좌클릭 드래그로 우측 윤곽 슬롯에 배치하며, 슬롯과 조각의 도형 종류·방향·크기·근접 조건이 모두 맞으면 해당 위치에 고정됩니다. `R` 키로 퍼즐을 초기화하고 `Q` 키로 프로그램을 종료합니다.
 - `number11.cpp`: OpenGL + GLFW + GLEW 환경에서 격자 보드 기반 장애물 게임을 구현합니다. 시작 시 콘솔 입력으로 보드 크기를 받아 셀 크기를 계산하고, 각 칸에 확률적으로 장애물(사각형/정삼각형/역삼각형)과 랜덤 색상을 배치합니다. 플레이어는 초기 `(0,0)` 칸에서 사각형 형태로 시작해 `W`/`A`/`S`/`D` 키로 경계 안에서 이동하며, 장애물이 있는 칸에 진입하면 장애물과 플레이어의 도형 타입이 서로 스왑됩니다. 충돌 직후에는 짧은 시간 확대 + 무지개 색상 효과를 적용하고, `Q` 키로 프로그램을 종료합니다.
+- `number12.cpp`: OpenGL + GLFW + GLEW 환경에서 두 개의 사각형이 각 통로를 따라 아래로 이동하는 타이밍 게임을 구현합니다. `Enter`를 눌렀을 때 두 사각형이 중앙 판정 영역 안에 동시에 들어오면 성공으로 처리되고, 성공한 쌍은 오른쪽 스택 영역으로 이동해 누적 표시됩니다. `R` 키로 전체 상태를 초기화하고 `Q` 키로 프로그램을 종료합니다.
 - `Shader.h`: 외부 GLSL 파일을 읽어 Vertex Shader와 Fragment Shader를 생성·컴파일하고, 이를 하나의 Shader Program으로 링크하여 사용할 수 있도록 하는 재사용 가능한 OpenGL Shader 초기화 헤더입니다.
 - `vertex.glsl`: 정점 위치(`layout(location = 0)`)와 색상(`layout(location = 1)`)을 입력받아 `gl_Position`과 색상 출력 변수(`out_Color`)를 설정합니다.
 - `fragment.glsl`: Vertex Shader에서 전달된 `out_Color`를 받아 최종 픽셀 색상(`Frag_Color`)으로 출력합니다.
@@ -125,3 +127,7 @@ OpenGL에서 사용
 17. 실패 시 `glGetProgramInfoLog()`로 오류 로그를 출력하고 `0`을 반환합니다.
 18. 링크 성공 후 `glDeleteShader()`로 개별 Vertex/Fragment Shader 객체를 삭제합니다.
 19. 최종 Shader Program ID를 반환합니다.
+
+## 🤖 AI 활용
+
+- AI 도구 사용 비율: **25%**
