@@ -55,11 +55,14 @@ open-gl-computer-graphics-/
             ├── Shader.h
             ├── cube.obj
             ├── fragment.glsl
+            ├── fragment14.glsl
             ├── number13.cpp
+            ├── number14.cpp
             ├── opengl3.vcxproj
             ├── opengl3.vcxproj.filters
             ├── pyramid.obj
-            └── vertex.glsl
+            ├── vertex.glsl
+            └── vertex14.glsl
 ```
 
 ## 🧪 Practice 1
@@ -92,10 +95,12 @@ open-gl-computer-graphics-/
 세 번째 실습은 OBJ 모델 데이터를 읽어 3D 도형(정육면체/사각뿔)의 면을 선택 렌더링하는 데 집중합니다.
 
 - `number13.cpp`: GLFW/GLEW 초기화 후 `cube.obj`, `pyramid.obj`를 로드하고, VAO/VBO/EBO를 구성해 좌표축과 3D 도형을 렌더링합니다. `1`~`6` 키로 정육면체 면 선택, `7`~`0` 키로 사각뿔 옆면 선택, `C` 키로 정육면체 임의 2면 선택, `T` 키로 바닥+임의 옆면 선택, `ESC` 키로 종료를 처리합니다.
+- `number14.cpp`: `cube.obj`, `pyramid.obj`를 모두 로드해 객체 토글/이동/회전/렌더링 모드 전환을 실습합니다. `C`/`P` 키로 정육면체·사각뿔 표시를 전환하고, 방향키로 위치 이동, `X`/`Y` 키로 각 축 회전 방향을 토글, `H` 키로 깊이 테스트 ON/OFF, `W` 키로 와이어프레임/채움 모드 전환, `S` 키로 위치·회전 상태 초기화, `ESC` 키로 종료합니다.
 - `Obj.h`: OBJ 파일의 `v`/`f` 라인을 파싱해 정점 좌표와 인덱스를 `ObjData` 구조체에 저장하는 로더를 제공합니다.
 - `Shader.h`: 외부 GLSL 파일을 읽어 Vertex/Fragment Shader를 컴파일하고 Program으로 링크합니다.
 - `vertex.glsl`: `modelTransform` 행렬을 적용해 3D 정점 좌표를 클립 공간으로 변환합니다.
 - `fragment.glsl`: uniform `faceColor`를 사용해 면 단위 단색 렌더링을 수행합니다.
+- `vertex14.glsl`, `fragment14.glsl`: 모델 변환 + 정점 색상 전달을 지원하며, uniform `useVertexColor`로 축 렌더링(고정색)과 객체 렌더링(정점색)을 분기합니다.
 - `cube.obj`, `pyramid.obj`: 정육면체/사각뿔 모델의 정점 및 면 인덱스 데이터입니다.
 
 전체 흐름:
