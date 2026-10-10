@@ -1,0 +1,23 @@
+# Visual Studio local settings and caches
+.vs/
+*.user
+*.suo
+*.ipch
+
+# Build output and intermediate directories
+x64/
+x86/
+Debug/
+Release/
+*.tlog/
+
+# Generated binaries and compiler metadata
+*.exe
+*.pdb
+*.ilk
+*.idb
+*.ipdb
+*.iobj
+*.log
+
+# OBJ files here are Wavefront model assets; keep them tracked.
