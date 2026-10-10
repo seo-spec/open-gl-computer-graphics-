@@ -1,7 +1,7 @@
 # 🎨 OpenGL Computer Graphics
 
 이 저장소는 OpenGL 및 컴퓨터 그래픽스 실습 과정을 정리한 개인 학습 저장소입니다.  
-현재 `첫 번째 실습`, `두 번째 실습`이 포함되어 있습니다.
+현재 `첫 번째 실습`, `두 번째 실습`, `세 번째 실습`이 포함되어 있습니다.
 
 ## 📚 Topics
 
@@ -30,21 +30,35 @@ open-gl-computer-graphics-/
 │   ├── number4.cpp
 │   ├── number5.cpp
 │   └── number6.cpp
-└── 두 번째 실습/
+├── 두 번째 실습/
+│   ├── .gitignore
+│   ├── opengl2.slnx
+│   └── opengl2/
+│       └── opengl2/
+│           ├── Shader.h
+│           ├── fragment.glsl
+│           ├── number7.cpp
+│           ├── number8.cpp
+│           ├── number9.cpp
+│           ├── number10.cpp
+│           ├── number11.cpp
+│           ├── number12.cpp
+│           ├── opengl2.vcxproj
+│           ├── opengl2.vcxproj.filters
+│           └── vertex.glsl
+└── 세 번째 실습/
     ├── .gitignore
-    ├── opengl2.slnx
-    └── opengl2/
-        └── opengl2/
+    └── opengl3/
+        ├── opengl3.slnx
+        └── opengl3/
+            ├── Obj.h
             ├── Shader.h
+            ├── cube.obj
             ├── fragment.glsl
-            ├── number7.cpp
-            ├── number8.cpp
-            ├── number9.cpp
-            ├── number10.cpp
-            ├── number11.cpp
-            ├── number12.cpp
-            ├── opengl2.vcxproj
-            ├── opengl2.vcxproj.filters
+            ├── number13.cpp
+            ├── opengl3.vcxproj
+            ├── opengl3.vcxproj.filters
+            ├── pyramid.obj
             └── vertex.glsl
 ```
 
@@ -72,6 +86,17 @@ open-gl-computer-graphics-/
 - `Shader.h`: 외부 GLSL 파일을 읽어 Vertex Shader와 Fragment Shader를 생성·컴파일하고, 이를 하나의 Shader Program으로 링크하여 사용할 수 있도록 하는 재사용 가능한 OpenGL Shader 초기화 헤더입니다.
 - `vertex.glsl`: 정점 위치(`layout(location = 0)`)와 색상(`layout(location = 1)`)을 입력받아 `gl_Position`과 색상 출력 변수(`out_Color`)를 설정합니다.
 - `fragment.glsl`: Vertex Shader에서 전달된 `out_Color`를 받아 최종 픽셀 색상(`Frag_Color`)으로 출력합니다.
+
+## 🧪 Practice 3 - OBJ 로딩과 3D 면 선택
+
+세 번째 실습은 OBJ 모델 데이터를 읽어 3D 도형(정육면체/사각뿔)의 면을 선택 렌더링하는 데 집중합니다.
+
+- `number13.cpp`: GLFW/GLEW 초기화 후 `cube.obj`, `pyramid.obj`를 로드하고, VAO/VBO/EBO를 구성해 좌표축과 3D 도형을 렌더링합니다. `1`~`6` 키로 정육면체 면 선택, `7`~`0` 키로 사각뿔 옆면 선택, `C` 키로 정육면체 임의 2면 선택, `T` 키로 바닥+임의 옆면 선택, `ESC` 키로 종료를 처리합니다.
+- `Obj.h`: OBJ 파일의 `v`/`f` 라인을 파싱해 정점 좌표와 인덱스를 `ObjData` 구조체에 저장하는 로더를 제공합니다.
+- `Shader.h`: 외부 GLSL 파일을 읽어 Vertex/Fragment Shader를 컴파일하고 Program으로 링크합니다.
+- `vertex.glsl`: `modelTransform` 행렬을 적용해 3D 정점 좌표를 클립 공간으로 변환합니다.
+- `fragment.glsl`: uniform `faceColor`를 사용해 면 단위 단색 렌더링을 수행합니다.
+- `cube.obj`, `pyramid.obj`: 정육면체/사각뿔 모델의 정점 및 면 인덱스 데이터입니다.
 
 전체 흐름:
 
