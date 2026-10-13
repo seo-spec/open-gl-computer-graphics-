@@ -295,7 +295,47 @@ void InputProcess() {
     }
     if (glfwGetKey(window, GLFW_KEY_R) == GLFW_PRESS) {
         if (!isRpressed) {
+            if (!isRpressed) {
+                // 육면체 출력
+                Drawcube = true;
+                Drawpyramid = false;
 
+                // 애니메이션 정지
+                isY = 0.0f;
+                isZ = 0.0f;
+                isOpen = false;
+                Srotate = false;
+                Bscaling = false;
+                isPair = false;
+                isChange = false;
+                isRotating = false;
+                isXRotating = false;
+
+                angleY = 30.0f;
+                TopAngleZ = 0.0f;
+                OpenAngleX = 0.0f;
+                RotateAngleX = 0.0f;
+                BackScale = 1.0f;
+                PairAngle = 0.0f;
+                ChangeAngle1 = 0.0f;
+                ChangeAngle2 = 0.0f;
+                changeDirection = 1.0f;
+                RotateAngle = 0.0f;
+                XRotateAngle = 0.0f;
+
+                selectedface1 = -1;
+                selectedface2 = -1;
+                orbitface1 = -1;
+                orbitface2 = -1;
+                edgeCenter = glm::vec3(0.0f);
+
+                for (int i = 0; i < 6; ++i) {
+                    faceAt[i] = i;
+                }
+
+                // 깊이 검사 초기 상태
+                isDepth = true;
+            }
         }
         isRpressed = true;
     }
