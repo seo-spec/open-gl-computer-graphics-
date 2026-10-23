@@ -53,6 +53,7 @@ open-gl-computer-graphics-/
         └── opengl3/
             ├── Obj.h
             ├── Shader.h
+            ├── cone.obj
             ├── cube.obj
             ├── fragment.glsl
             ├── fragment14.glsl
@@ -61,9 +62,11 @@ open-gl-computer-graphics-/
             ├── number14.cpp
             ├── number15.cpp
             ├── number16.cpp
+            ├── number17.cpp
             ├── opengl3.vcxproj
             ├── opengl3.vcxproj.filters
             ├── pyramid.obj
+            ├── sphere.obj
             ├── vertex.glsl
             └── vertex14.glsl
 ```
@@ -93,21 +96,22 @@ open-gl-computer-graphics-/
 - `vertex.glsl`: 정점 위치(`layout(location = 0)`)와 색상(`layout(location = 1)`)을 입력받아 `gl_Position`과 색상 출력 변수(`out_Color`)를 설정합니다.
 - `fragment.glsl`: Vertex Shader에서 전달된 `out_Color`를 받아 최종 픽셀 색상(`Frag_Color`)으로 출력합니다.
 
-## 🧪 Practice 3 - OBJ 로딩과 3D 면 선택
+## 🧪 Practice 3 - OBJ 로딩과 3D 변환·애니메이션
 
-세 번째 실습은 OBJ 모델 데이터를 읽어 3D 도형(정육면체/사각뿔)의 면을 선택 렌더링하는 데 집중합니다.
+세 번째 실습은 OBJ 모델 데이터를 읽어 3D 도형을 렌더링하고, 객체 선택·변환·면 애니메이션을 적용하는 과정을 다룹니다.
 
 - `number13.cpp`: GLFW/GLEW 초기화 후 `cube.obj`, `pyramid.obj`를 로드하고, VAO/VBO/EBO를 구성해 좌표축과 3D 도형을 렌더링합니다. `1`~`6` 키로 정육면체 면 선택, `7`~`0` 키로 사각뿔 옆면 선택, `C` 키로 정육면체 임의 2면 선택, `T` 키로 바닥+임의 옆면 선택, `ESC` 키로 종료를 처리합니다.
 - `number14.cpp`: `cube.obj`, `pyramid.obj`를 모두 로드해 객체 토글/이동/회전/렌더링 모드 전환을 실습합니다. `C`/`P` 키로 정육면체·사각뿔 표시를 전환하고, 방향키로 위치 이동, `X`/`Y` 키로 각 축 회전 방향을 토글, `H` 키로 깊이 테스트 ON/OFF, `W` 키로 와이어프레임/채움 모드 전환, `S` 키로 위치·회전 상태 초기화, `ESC` 키로 종료합니다.
 - `number15.cpp`: `cube.obj`, `pyramid.obj`를 로드해 좌표축과 객체를 렌더링하고, 키 입력으로 큐브 면 애니메이션/회전 상태를 제어합니다. `P` 키로 큐브·피라미드 표시 대상을 순환 전환하고, `H` 키로 깊이 테스트를 토글하며, `Y` 키로 Y축 공전 회전을 켜고 끕니다. `T`(윗면 Z축 회전), `F`(문 열기), `S`(측면 회전), `B`(뒷면 스케일), `1`(임의 인접 2면 페어 회전), `2`(임의 2면 위치 교체), `4`(Y축 기준 면 순환), `5`(X축 기준 면 순환), `R`(전체 상태 초기화), `Q`/`ESC`(종료) 키를 지원합니다.
 - `number16.cpp`: `pyramid.obj`를 로드해 좌표축과 사각뿔을 렌더링하고 면 단위 애니메이션을 실습합니다. `P` 키로 사각뿔 표시를 시작하고, `H` 키로 깊이 테스트 ON/OFF, `Y` 키로 Y축 회전을 토글합니다. `6` 키로 사각뿔 옆면 전체 펼침/접힘, `7` 키로 옆면 순차 펼침/복귀, `8` 키로 옆면 회전 스왑 애니메이션, `9` 키로 꼭짓점 기준 열기/닫기 애니메이션을 제어하며 `Q`/`ESC` 키로 종료합니다.
+- `number17.cpp`: `cube.obj`, `sphere.obj`, `pyramid.obj`, `cone.obj`를 로드해 큐브와 구를 기본 도형으로 렌더링하고, `C` 키로 큐브·구를 사각뿔·원뿔로 교체합니다. `1`~`3` 키로 큐브·구·두 도형의 적용 대상을 선택하며, `X`/`Y` 키로 X·Y축 회전 방향 전환, `R` 키로 Y축 공전 방향 전환, `A` 키로 크기 변화, `B` 키로 원점 기준 크기 변화, `D`/`E` 키로 X·Y축 이동을 실행합니다. `T` 키는 원점을 경유하는 도형 자리 교환, `U` 키는 위·아래 경유 자리 교환 애니메이션을 시작하고, `V` 키는 두 도형에 깊이 기반 크기 변화·Y축 회전·공전을 함께 적용합니다. `S` 키로 전체 상태를 초기화하고 `Q` 키로 종료합니다.
 - `launcher.cpp`: `number13.cpp`~`number16.cpp`를 하나의 실행 진입점에서 선택 실행하는 런처입니다. OpenGL 메뉴 화면에서 버튼 클릭 또는 숫자 `1`~`4` 입력으로 Practice 13~16을 시작하고, `EXIT` 버튼/`ESC`로 종료할 수 있습니다. 선택한 실습은 별도 프로세스로 실행되어 종료 시 메뉴로 돌아옵니다.
 - `Obj.h`: OBJ 파일의 `v`/`f` 라인을 파싱해 정점 좌표와 인덱스를 `ObjData` 구조체에 저장하는 로더를 제공합니다.
 - `Shader.h`: 외부 GLSL 파일을 읽어 Vertex/Fragment Shader를 컴파일하고 Program으로 링크합니다.
 - `vertex.glsl`: `modelTransform` 행렬을 적용해 3D 정점 좌표를 클립 공간으로 변환합니다.
 - `fragment.glsl`: uniform `faceColor`를 사용해 면 단위 단색 렌더링을 수행합니다.
 - `vertex14.glsl`, `fragment14.glsl`: 모델 변환 + 정점 색상 전달을 지원하며, uniform `useVertexColor`로 축 렌더링(고정색)과 객체 렌더링(정점색)을 분기합니다.
-- `cube.obj`, `pyramid.obj`: 정육면체/사각뿔 모델의 정점 및 면 인덱스 데이터입니다.
+- `cube.obj`, `pyramid.obj`, `sphere.obj`, `cone.obj`: 정육면체·사각뿔·구·원뿔 모델의 정점 및 면 인덱스 데이터입니다.
 
 전체 흐름:
 
