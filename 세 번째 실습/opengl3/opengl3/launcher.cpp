@@ -28,6 +28,9 @@ namespace Practice15 {
 namespace Practice16 {
 #include "number16.cpp"
 }
+namespace Practice17 {
+#include "number17.cpp"
+}
 
 namespace Launcher {
 // Small bitmap font rendered with scissor rectangles; no extra font assets needed.
@@ -42,15 +45,15 @@ const Glyph font[] = {
     {'U',{17,17,17,17,17,17,14}}, {'X',{17,17,10,4,10,17,17}},
     {'1',{4,12,4,4,4,4,14}}, {'3',{30,1,1,14,1,1,30}},
     {'4',{2,6,10,18,31,2,2}}, {'5',{31,16,16,30,1,1,30}},
-    {'6',{14,16,16,30,17,17,14}}
+    {'6',{14,16,16,30,17,17,14}}, {'7',{31,1,2,4,8,8,8}}
 };
 
 constexpr int menuWidth = 640, menuHeight = 480;
 struct Button { int x, y, width, height, practice; const char* label; };
 const Button buttons[] = {
-    {80,140,220,90,13,"13"}, {340,140,220,90,14,"14"},
-    {80,250,220,90,15,"15"}, {340,250,220,90,16,"16"},
-    {240,390,160,48,0,"EXIT"}
+    {80,140,220,70,13,"13"}, {340,140,220,70,14,"14"},
+    {80,230,220,70,15,"15"}, {340,230,220,70,16,"16"},
+    {210,320,220,70,17,"17"}, {240,410,160,48,0,"EXIT"}
 };
 
 void Rectangle(int x, int y, int width, int height,
@@ -102,7 +105,7 @@ int RunMenu() {
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
     GLFWwindow* menu = glfwCreateWindow(menuWidth, menuHeight,
-        "Practice Selector - click 13 / 14 / 15 / 16", nullptr, nullptr);
+        "Practice Selector - click 13 / 14 / 15 / 16 / 17", nullptr, nullptr);
     if (!menu) { glfwTerminate(); return 1; }
     glfwMakeContextCurrent(menu);
     glewExperimental = GL_TRUE;
@@ -112,7 +115,7 @@ int RunMenu() {
     glfwSwapInterval(1);
     HANDLE process = nullptr;
     bool mouseWasDown = false;
-    bool keyWasDown[4] = {};
+    bool keyWasDown[5] = {};
     while (!glfwWindowShouldClose(menu)) {
         // Wait with event processing while the selected practice owns its window.
         if (process) {
@@ -167,7 +170,7 @@ int RunMenu() {
             if (hover && mouseDown && !mouseWasDown) selection = button.practice;
         }
         mouseWasDown = mouseDown;
-        for (int i = 0; i < 4; ++i) {
+        for (int i = 0; i < 5; ++i) {
             bool down = glfwGetKey(menu, GLFW_KEY_1 + i) == GLFW_PRESS;
             if (down && !keyWasDown[i]) selection = 13 + i;
             keyWasDown[i] = down;
@@ -205,6 +208,7 @@ int main(int argc, char* argv[]) {
         if (std::strcmp(argv[2], "14") == 0) return Practice14::main();
         if (std::strcmp(argv[2], "15") == 0) return Practice15::main();
         if (std::strcmp(argv[2], "16") == 0) return Practice16::main();
+        if (std::strcmp(argv[2], "17") == 0) return Practice17::main();
         return 1;
     }
     return Launcher::RunMenu();

@@ -33,9 +33,14 @@
     <ClCompile Include="number17.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
+    <ClCompile Include="number18.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="vertex.glsl" />
+    <None Include="vertex18.glsl" />
+    <None Include="fragment18.glsl" />
     <None Include="fragment.glsl" />
     <None Include="vertex14.glsl" />
     <None Include="fragment14.glsl" />

@@ -119,14 +119,14 @@ void InitCubeBuffer(const ObjData& obj) {
     glGenBuffers(1, &cubevbo);
     glBindBuffer(GL_ARRAY_BUFFER, cubevbo);
     glBufferData(GL_ARRAY_BUFFER, obj.vertices.size() * sizeof(float),
-                 obj.vertices.data(), GL_STATIC_DRAW);
+        obj.vertices.data(), GL_STATIC_DRAW);
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, nullptr);
     glEnableVertexAttribArray(0);
 
     glGenBuffers(1, &cubeebo);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, cubeebo);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, obj.indices.size() * sizeof(unsigned int),
-                 obj.indices.data(), GL_STATIC_DRAW);
+        obj.indices.data(), GL_STATIC_DRAW);
     cubeIndexCount = static_cast<GLsizei>(obj.indices.size());
     glBindVertexArray(0);
 }
@@ -138,15 +138,15 @@ void InitSphereBuffer(const ObjData& obj) {
     glGenBuffers(1, &spherevbo);
     glBindBuffer(GL_ARRAY_BUFFER, spherevbo);
     glBufferData(GL_ARRAY_BUFFER, obj.vertices.size() * sizeof(float),
-        obj.vertices.data(),GL_STATIC_DRAW);
+        obj.vertices.data(), GL_STATIC_DRAW);
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, nullptr);
     glEnableVertexAttribArray(0);
 
     glGenBuffers(1, &sphereebo);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, sphereebo);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, obj.indices.size() * sizeof(unsigned int),
-        obj.indices.data(),GL_STATIC_DRAW);
-    
+        obj.indices.data(), GL_STATIC_DRAW);
+
     sphereIndexCount = static_cast<GLsizei>(obj.indices.size());
     glBindVertexArray(0);
 }
@@ -416,7 +416,7 @@ void UpdateAnimation() {
             cube.moveX = rightLimit - (-0.6f);
             cube.movingX = false;
         }
-      
+
     }
     if (sphere.movingX) {
         sphere.moveX += sphere.moveSpeedX * deltaTime;
@@ -508,15 +508,20 @@ void UpdateAnimation() {
 void DrawCube(const glm::mat4& transform) {
     glUniformMatrix4fv(modelLocation, 1, GL_FALSE,
         glm::value_ptr(transform));
-    
+
     glBindVertexArray(useAlternateShapes ? pyramidMesh.vao : cubevao);
     glDrawElements(GL_TRIANGLES, useAlternateShapes ? pyramidMesh.indexCount : cubeIndexCount,
         GL_UNSIGNED_INT, nullptr);
 }
 
 void DrawSphere(const glm::mat4& transform) {
+    // 원뿔 OBJ는 0~1 좌표이므로 구와 같은 원점 중심으로 맞춘다.
+    glm::mat4 meshTransform = transform;
+    if (useAlternateShapes) {
+        meshTransform = glm::translate(meshTransform, glm::vec3(-0.5f));
+    }
     glUniformMatrix4fv(modelLocation, 1, GL_FALSE,
-        glm::value_ptr(transform));
+        glm::value_ptr(meshTransform));
 
     glBindVertexArray(useAlternateShapes ? coneMesh.vao : spherevao);
     glDrawElements(GL_TRIANGLES, useAlternateShapes ? coneMesh.indexCount : sphereIndexCount,
@@ -577,7 +582,7 @@ void DrawScene() {
             rotateModel = glm::rotate(rotateModel, glm::radians(cube.rotationY), glm::vec3(.0f, 1.0f, 0.0f));
             rotateModel = glm::translate(rotateModel, glm::vec3(-0.5f, 0.0f, -0.5f));
         }
-        DrawCube(projection *axisModel*cubeMovemodel* orbitModel*originScaleModel* cubemodel*scaleModel*rotateModel);
+        DrawCube(projection * axisModel * cubeMovemodel * orbitModel * originScaleModel * cubemodel * scaleModel * rotateModel);
     }
     if (sphere.visible) {
         glm::mat4 spheremodel(1.0f);
@@ -589,30 +594,24 @@ void DrawScene() {
         orbitModel = glm::rotate(orbitModel, glm::radians(sphere.orbitAngleY), glm::vec3(0.0f, 1.0f, 0.0f));
         sphereMovemodel = glm::translate(sphereMovemodel, glm::vec3(sphere.moveX, sphere.moveY, sphere.moveZ));
         originScaleModel = glm::scale(originScaleModel, glm::vec3(sphere.originScale));
-        spheremodel = glm::translate(spheremodel, glm::vec3(-0.05f, -0.3f, -0.3f));
+        spheremodel = glm::translate(spheremodel, glm::vec3(0.45f, 0.20f, 0.20f));
         glm::mat4 scaleModel(1.0f);
-        scaleModel = glm::translate(scaleModel, glm::vec3(0.5f, 0.5f, 0.5f));
         float sphereDrawScale = sphere.scale;
         if (sphere.depthScaling) {
             glm::vec4 center = axisModel * sphereMovemodel * orbitModel
-                * originScaleModel * spheremodel * glm::vec4(0.5f, 0.5f, 0.5f, 1.0f);
+                * originScaleModel * spheremodel * glm::vec4(0.0f, 0.0f, 0.0f, 1.0f);
             float depthFactor = glm::clamp(1.0f + 0.5f * center.z, 0.65f, 1.35f);
             sphereDrawScale *= depthFactor;
         }
         scaleModel = glm::scale(scaleModel, glm::vec3(sphereDrawScale));
-        scaleModel = glm::translate(scaleModel, glm::vec3(-0.5f, -0.5f, -0.5f));
         glm::mat4 rotateModel(1.0f);
         if (sphere.rotatingX) {
-            rotateModel = glm::translate(rotateModel, glm::vec3(0.0f, 0.5f, 0.5f));
             rotateModel = glm::rotate(rotateModel, glm::radians(sphere.rotationX), glm::vec3(1.0f, 0.0f, 0.0f));
-            rotateModel = glm::translate(rotateModel, glm::vec3(0.0f, -0.5f, -0.5f));
         }
         if (sphere.rotatingY) {
-            rotateModel = glm::translate(rotateModel, glm::vec3(0.5f, 0.0f, 0.5f));
             rotateModel = glm::rotate(rotateModel, glm::radians(sphere.rotationY), glm::vec3(0.0f, 1.0f, 0.0f));
-            rotateModel = glm::translate(rotateModel, glm::vec3(-0.5f, 0.0f, -0.5f));
         }
-        DrawSphere(projection*axisModel*sphereMovemodel*orbitModel* originScaleModel * spheremodel*scaleModel*rotateModel);
+        DrawSphere(projection * axisModel * sphereMovemodel * orbitModel * originScaleModel * spheremodel * scaleModel * rotateModel);
     }
 }
 
